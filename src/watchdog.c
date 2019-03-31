@@ -18,6 +18,6 @@ void iwdg_enable() {
     IWDG_KR = IWDG_KEY_REFRESH;
 }
 
-inline void iwdg_refresh() {
+void iwdg_refresh() {
     IWDG_KR = IWDG_KEY_REFRESH;
 }

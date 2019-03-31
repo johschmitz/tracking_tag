@@ -24,6 +24,6 @@
 
 void SPI_init();
 
-inline uint8_t SPI_write(uint8_t data);
+uint8_t SPI_write(uint8_t data);
 
 #endif /* SPI_H */

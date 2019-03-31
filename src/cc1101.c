@@ -112,17 +112,17 @@ void cc1101_setCCregs(enum DATARATE rate) {
     printf("CC1101 configuration complete.\n");
 }
 
-inline void cc1101_waitReady() {
+void cc1101_waitReady() {
     // Wait for CC1101 to become ready
     while(PinRead(SO_PORT,SO_PIN));
 }
 
-inline void cc1101_select() {
+void cc1101_select() {
     PinLow(CSN_PORT,CSN_PIN);
     cc1101_waitReady();
 }
 
-inline void cc1101_unSelect() {
+void cc1101_unSelect() {
     PinHigh(CSN_PORT,CSN_PIN);
 }
 
@@ -160,7 +160,7 @@ void cc1101_writeSingle(uint8_t address, uint8_t value) {
     cc1101_unSelect();
 }
 
-inline void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len) {
+void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len) {
     int i;
     cc1101_select();
     SPI_write(address | WRITE_BURST);
@@ -227,7 +227,7 @@ void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes)
             // Refill TX FIFO periodically until sequence is complete
             do {
                 wait_GDO0_low();
-                cc1101_writeBurst(CC1101_TXFIFO, &data[byteCounter],CC1101_TXFIFO_REFILL);
+                cc1101_writeBurst(CC1101_TXFIFO, &data[byteCounter], CC1101_TXFIFO_REFILL);
                 byteCounter += CC1101_TXFIFO_REFILL;
                 // Check for TX FIFO underflow
                 if (TXFIFO_UNDERFLOW == cc1101_readStatus(CC1101_MARCSTATE) & 0x1F) {

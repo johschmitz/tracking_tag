@@ -280,15 +280,15 @@ enum DATARATE
 void cc1101_reset();
 void cc1101_init(enum DATARATE rate);
 
-inline void cc1101_select();
-inline void cc1101_unSelect();
-inline void cc1101_waitReady();
+void cc1101_select();
+void cc1101_unSelect();
+void cc1101_waitReady();
 
 uint8_t cc1101_readReg(uint8_t address, uint8_t regType);
 uint8_t cc1101_readSingle(uint8_t address);
 uint8_t cc1101_readStatus(uint8_t address);
 void cc1101_writeSingle(uint8_t address, uint8_t value);
-inline void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len);
+void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len);
 void cc1101_writeCmdStrobe(uint8_t command );
 
 void cc1101_setTxPowerAmp(uint8_t level);

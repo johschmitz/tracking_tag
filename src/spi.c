@@ -10,7 +10,7 @@ void SPI_init() {
     SPI_CR2 = 0b00000000;
 }
 
-inline uint8_t SPI_write(uint8_t data) {
+uint8_t SPI_write(uint8_t data) {
     SPI_DR = data;
     while (!(SPI_SR & (1 << SPI_SR_TXE)));
     _delay_us(1);
