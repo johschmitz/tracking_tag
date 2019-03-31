@@ -17,9 +17,10 @@ def sha512_code(code_id, code_length):
 
     return code
 
-def write_header_file(header_file_name, code):
+def write_header_file(header_file_name, code, code_id):
     output_file = open(header_file_name, "w")
     prefix = ("#define CDMA_CODE_BYTES " + str(len(code)) + "\n\n"
+              "// Code ID: " + code_id + "\n"
               "const uint8_t cdma_code[CDMA_CODE_BYTES] = {\n    ")
     postfix = "\n};"
     output_file.write(prefix)
@@ -62,7 +63,7 @@ def main():
 
     code = sha512_code(code_id, code_length)
     print("Length of generated code in bytes:", len(code))
-    write_header_file(header_file_name, code)
+    write_header_file(header_file_name, code, code_id)
     print("Write header file to:", header_file_name)
     write_reference_file(reference_file_name, code)
     print("Write reference file to:", reference_file_name)
