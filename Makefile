@@ -1,7 +1,7 @@
 MCU  = stm8s003f3
 ARCH = stm8
 
-F_CPU   ?= 2000000
+F_CPU   ?= 16000000
 
 SRCDIR   = src
 INCLUDEDIR = include
@@ -23,11 +23,11 @@ LD       = sdld
 AS       = sdasstm8
 OBJCOPY  = sdobjcopy
 ASFLAGS  = -plosgff
-CFLAGS   = -m$(ARCH) #-p$(MCU) -DF_CPU=$(F_CPU)UL
-CFLAGS   = -I$(INCLUDEDIR)
-#CFLAGS  += --std-sdcc11
-#CFLAGS  += --stack-auto --noinduction --use-non-free
-#CFLAGS   += --opt-code-size
+CFLAGS   = -m$(ARCH) -p$(MCU) -DF_CPU=$(F_CPU)UL
+CFLAGS  += -I$(INCLUDEDIR)
+CFLAGS  += --std-sdcc11
+CFLAGS  += --stack-auto --noinduction --use-non-free
+CFLAGS  += --opt-code-size
 ## Extra optimization rules - use with care
 #CFLAGS  += --peep-file $(LIBDIR)/util/extra.def
 LDFLAGS  = -m$(ARCH) -l$(ARCH) --out-fmt-ihx
