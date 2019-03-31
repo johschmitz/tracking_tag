@@ -80,10 +80,10 @@ void main() {
 
 
     // Permanently toggle between sleep and burst tranmission until power source is dead
-       printf("Beginning transmission.\n");
+    printf("Beginning transmission.\n");
     while (1) {
         iwdg_refresh();
-          cc1101_sendDataPollGdo0(cdma_code, CDMA_CODE_BYTES);
+        cc1101_sendDataPollGdo0(cdma_code, CDMA_CODE_BYTES);
         printf("Transmitted code sequence %d time(s)\n", ++counter);
         // Refresh watchdog
         iwdg_refresh();
