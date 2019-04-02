@@ -303,7 +303,3 @@ void cc1101_setIdleState();
 void cc1101_setSleepState(); 
 
 void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes);
-void cc1101_sendDataPollTxFifo(uint8_t *data, uint16_t numBytes);
-
-extern uint8_t cc1101_crc;
-extern uint8_t cc1101_lqi;
