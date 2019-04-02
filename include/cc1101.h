@@ -4,12 +4,12 @@
  */
 enum MARCSTATE
 {
-  SLEEP = 0, IDLE, XOFF, VCOON_MC,
-  REGON_MC, MANCAL, VCOON, REGON,
-  STARTCAL, BWBOOST, FS_LOCK, IFADCON,
-  ENDCAL, RX, RX_END, RX_RST,
-  TXRX_SWITCH, RXFIFO_OVERFLOW, FSTXON, TX,
-  TX_END, RXTX_SWITCH, TXFIFO_UNDERFLOW
+    SLEEP = 0, IDLE, XOFF, VCOON_MC,
+    REGON_MC, MANCAL, VCOON, REGON,
+    STARTCAL, BWBOOST, FS_LOCK, IFADCON,
+    ENDCAL, RX, RX_END, RX_RST,
+    TXRX_SWITCH, RXFIFO_OVERFLOW, FSTXON, TX,
+    TX_END, RXTX_SWITCH, TXFIFO_UNDERFLOW
 };
 
 /**
@@ -18,8 +18,8 @@ enum MARCSTATE
 // SLOW -> 1.00112 kbps, FAST 1 Mbps
 enum DATARATE
 {
-  CC1101_DATARATE_SLOW,
-  CC1101_DATARATE_FAST
+    CC1101_DATARATE_SLOW = 0,
+    CC1101_DATARATE_FAST
 };
 
 /**
@@ -37,17 +37,28 @@ enum DATARATE
 #define CC1101_STATUS_REGISTER   READ_BURST
 
 /**
+ * Modulation schemes
+ */
+enum MODULATION
+{
+    CC1101_MODULATION_FSK = 0,
+    CC1101_MODULATION_OOK
+};
+
+
+/**
  * PATABLE & FIFO's
  */
-#define CC1101_PATABLE0          0x3E       // PATABLE address
+#define CC1101_PATABLE           0x3E       // PATABLE address
 #define CC1101_TXFIFO            0x3F       // TX FIFO address
 #define CC1101_RXFIFO            0x3F       // RX FIFO address
 
 /**
  * PATABLE values
  */
-#define CC1101_PA_0_DBM                 0x60
-#define CC1101_PA_10_DBM                0xC0
+#define CC1101_PATABLE_LEN       8
+#define CC1101_PA_0_DBM          0x60
+#define CC1101_PA_10_DBM         0xC0
 
 /**
  * Length of the FIFOs in bytes
@@ -211,7 +222,10 @@ enum DATARATE
 // Data rate 999.756 kBaud
 #define CC1101_DEFVAL_MDMCFG4_FAST      0xFF    //  Modem Configuration
 #define CC1101_DEFVAL_MDMCFG3_FAST      0x3B    //  Modem Configuration
-#define CC1101_DEFVAL_MDMCFG2           0x80    //  Modem Configuration
+// Modulation: 2-FSK
+#define CC1101_DEFVAL_MDMCFG2_FSK       0x80    //  Modem Configuration
+// Modulation: OOK
+#define CC1101_DEFVAL_MDMCFG2_OOK       0xB0    //  Modem Configuration
 #define CC1101_DEFVAL_MDMCFG1           0x00    //  Modem Configuration
 #define CC1101_DEFVAL_MDMCFG0           0xF8    //  Modem Configuration
 #define CC1101_DEFVAL_DEVIATN           0x77    //  Modem Deviation Setting
@@ -227,7 +241,10 @@ enum DATARATE
 #define CC1101_DEFVAL_WOREVT0           0x6B    //  Low Byte Event0 Timeout
 #define CC1101_DEFVAL_WORCTRL           0xFB    //  Wake On Radio Control
 #define CC1101_DEFVAL_FREND1            0x56    //  Front End RX Configuration
-#define CC1101_DEFVAL_FREND0            0x10    //  Front End TX Configuration
+// Modulation: 2-FSK
+#define CC1101_DEFVAL_FREND0_FSK        0x10    //  Front End TX Configuration
+// Modulation: OOK
+#define CC1101_DEFVAL_FREND0_OOK        0x11    //  Front End TX Configuration
 #define CC1101_DEFVAL_FSCAL3_SLOW       0xE9    //  Frequency Synthesizer Calibration
 #define CC1101_DEFVAL_FSCAL3_FAST       0xEA    //  Frequency Synthesizer Calibration
 #define CC1101_DEFVAL_FSCAL2            0x2A    //  Frequency Synthesizer Calibration
@@ -278,7 +295,7 @@ enum DATARATE
 #define SO_PIN   PIN7
 
 void cc1101_reset();
-void cc1101_init(enum DATARATE rate);
+void cc1101_init(enum DATARATE datarate, enum MODULATION modulation);
 
 void cc1101_select();
 void cc1101_unSelect();
@@ -290,9 +307,9 @@ uint8_t cc1101_readStatus(uint8_t address);
 void cc1101_writeSingle(uint8_t address, uint8_t value);
 void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len);
 void cc1101_writeCmdStrobe(uint8_t command );
+void cc1101_writePaTableOok(uint8_t paValue);
 
-void cc1101_setTxPowerAmp(uint8_t level);
-void cc1101_setCCregs(enum DATARATE rate);
+void cc1101_setCCregs(enum DATARATE datarate, enum MODULATION modulation);
 void cc1101_setChannel(uint8_t chnl);
 
 void cc1101_setCarrierFreq(uint8_t freq);
@@ -302,4 +319,4 @@ void cc1101_flushTxFifo();
 void cc1101_setIdleState();
 void cc1101_setSleepState(); 
 
-void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes);
+void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes, enum MODULATION modulation);

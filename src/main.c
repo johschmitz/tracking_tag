@@ -9,6 +9,10 @@
 #include "watchdog.h"
 #include "awu.h"
 
+// Choose rate and modulation
+const enum MODULATION modulation = CC1101_MODULATION_OOK;
+const enum DATRATE datarate = CC1101_DATARATE_FAST;
+
 /*
  * Redirect stdout to UART
  */
@@ -45,7 +49,7 @@ void awu_irq_handler() __interrupt(AWU_ISR) {
 }
 
 void main() {
-    uint8_t counter = 0;
+    uint32_t counter = 0;
 
     // Enable interrupts
     enable_interrupts();
@@ -67,7 +71,7 @@ void main() {
 
     // Reset and Initialize CC1101
     printf("\nInitializing CC1101...\n");
-    cc1101_init(CC1101_DATARATE_FAST);
+    cc1101_init(datarate, modulation);
     //cc1101_setSyncWord(syncWord[0],syncWord[1]);
     printf("CC1101 initialization complete.\n");
     // Print sum device information
@@ -78,12 +82,11 @@ void main() {
     printf("CC1101_MARCSTATE: ");
     printf("%d\n",cc1101_readReg(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & 0x1f);
 
-
     // Permanently toggle between sleep and burst tranmission until power source is dead
     printf("Beginning transmission.\n");
     while (1) {
         iwdg_refresh();
-        cc1101_sendDataPollGdo0(cdma_code, CDMA_CODE_BYTES);
+        cc1101_sendDataPollGdo0(cdma_code, CDMA_CODE_BYTES, modulation);
         printf("Transmitted code sequence %d time(s)\n", ++counter);
         // Refresh watchdog
         iwdg_refresh();

@@ -8,7 +8,7 @@
 #include "spi.h"
 
 
-void cc1101_init(enum DATARATE rate) {
+void cc1101_init(enum DATARATE datarate, enum MODULATION modulation) {
     // Set CSN_PIN as output pin
     PinOutput(CSN_PORT,CSN_PIN);
     PinOutputPullUp(CSN_PORT,CSN_PIN);
@@ -30,7 +30,7 @@ void cc1101_init(enum DATARATE rate) {
 
     SPI_init();
     cc1101_reset();
-    cc1101_setCCregs(rate);
+    cc1101_setCCregs(datarate, modulation);
 }
 
 void cc1101_reset() {
@@ -46,7 +46,7 @@ void cc1101_reset() {
     printf("CC1101 reset complete.\n");
 }
 
-void cc1101_setCCregs(enum DATARATE rate) {
+void cc1101_setCCregs(enum DATARATE datarate, enum MODULATION modulation) {
     cc1101_writeSingle(CC1101_IOCFG2,   CC1101_DEFVAL_IOCFG2);
     cc1101_writeSingle(CC1101_IOCFG1,   CC1101_DEFVAL_IOCFG1);
     cc1101_writeSingle(CC1101_IOCFG0,   CC1101_DEFVAL_IOCFG0);
@@ -63,7 +63,7 @@ void cc1101_setCCregs(enum DATARATE rate) {
     cc1101_writeSingle(CC1101_FREQ2,  CC1101_DEFVAL_FREQ2_433);
     cc1101_writeSingle(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_433);
     cc1101_writeSingle(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_433);
-    if (CC1101_DATARATE_SLOW == rate) {
+    if (CC1101_DATARATE_SLOW == datarate) {
         printf("CC1101 setting data rate to slow.\n");
         cc1101_writeSingle(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4_SLOW);
         cc1101_writeSingle(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3_SLOW);
@@ -73,7 +73,12 @@ void cc1101_setCCregs(enum DATARATE rate) {
         cc1101_writeSingle(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4_FAST);
         cc1101_writeSingle(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3_FAST);
     }
-    cc1101_writeSingle(CC1101_MDMCFG2,  CC1101_DEFVAL_MDMCFG2);
+    if (CC1101_MODULATION_FSK == modulation) {
+        cc1101_writeSingle(CC1101_MDMCFG2,  CC1101_DEFVAL_MDMCFG2_FSK);
+    }
+    else {
+        cc1101_writeSingle(CC1101_MDMCFG2,  CC1101_DEFVAL_MDMCFG2_OOK);
+    }
     cc1101_writeSingle(CC1101_MDMCFG1,  CC1101_DEFVAL_MDMCFG1);
     cc1101_writeSingle(CC1101_MDMCFG0,  CC1101_DEFVAL_MDMCFG0);
     cc1101_writeSingle(CC1101_DEVIATN,  CC1101_DEFVAL_DEVIATN);
@@ -89,8 +94,13 @@ void cc1101_setCCregs(enum DATARATE rate) {
     cc1101_writeSingle(CC1101_WOREVT0,  CC1101_DEFVAL_WOREVT0);
     cc1101_writeSingle(CC1101_WORCTRL,  CC1101_DEFVAL_WORCTRL);
     cc1101_writeSingle(CC1101_FREND1,  CC1101_DEFVAL_FREND1);
-    cc1101_writeSingle(CC1101_FREND0,  CC1101_DEFVAL_FREND0);
-    if (CC1101_DATARATE_SLOW == rate) {
+    if (CC1101_MODULATION_FSK == modulation) {    
+        cc1101_writeSingle(CC1101_FREND0,  CC1101_DEFVAL_FREND0_FSK);
+    }
+    else {
+        cc1101_writeSingle(CC1101_FREND0,  CC1101_DEFVAL_FREND0_OOK);
+    }
+    if (CC1101_DATARATE_SLOW == datarate) {
         cc1101_writeSingle(CC1101_FSCAL3,  CC1101_DEFVAL_FSCAL3_SLOW);
     }
     else {
@@ -107,7 +117,12 @@ void cc1101_setCCregs(enum DATARATE rate) {
     cc1101_writeSingle(CC1101_TEST2,  CC1101_DEFVAL_TEST2);
     cc1101_writeSingle(CC1101_TEST1,  CC1101_DEFVAL_TEST1);
     cc1101_writeSingle(CC1101_TEST0,  CC1101_DEFVAL_TEST0);
-    cc1101_writeSingle(CC1101_PATABLE0, CC1101_PA_10_DBM);
+    if (CC1101_MODULATION_FSK == modulation) {
+        cc1101_writeSingle(CC1101_PATABLE, CC1101_PA_10_DBM);
+    }
+    else {
+        cc1101_writePaTableOok(CC1101_PA_10_DBM);
+    }
     
     printf("CC1101 configuration complete.\n");
 }
@@ -176,8 +191,16 @@ void cc1101_writeCmdStrobe(uint8_t command ){
     cc1101_unSelect();
 }
 
-void cc1101_setTxPowerAmp(uint8_t level) {
-    cc1101_writeSingle(CC1101_PATABLE0, level);
+void cc1101_writePaTableOok(uint8_t paValue)
+{
+    uint8_t pa_values[CC1101_PATABLE_LEN] = {0x00,paValue,0x00,0x00,0x00,0x00,0x00,0x00};
+    int i;
+    cc1101_select();
+    for(i=0;i<CC1101_PATABLE_LEN;i++) {
+        SPI_write(CC1101_PATABLE);
+        SPI_write(pa_values[i]);
+    }
+    cc1101_unSelect();
 }
 
 void cc1101_synthStartupState()
@@ -204,10 +227,15 @@ void cc1101_setSleepState()
     cc1101_writeCmdStrobe(CC1101_SPWD);
 }
 
-void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes)
+void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes, enum MODULATION modulation)
 {
     uint16_t byteCounter = 0;
     enum MARCSTATE marcState;
+
+    if (CC1101_MODULATION_OOK == modulation) {
+        // For OOK PATABLE needs to be set after each SLEEP
+        cc1101_writePaTableOok(CC1101_PA_10_DBM);
+    }
 
     printf("Startup frequency synthesizer.\n");
     cc1101_synthStartupState();
@@ -234,8 +262,8 @@ void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes)
                     printf("TXFIFO underflow. Go back to IDLE state.\n");
                     cc1101_flushTxFifo();
                     cc1101_setIdleState();
-                    return;                
-                }                
+                    return;
+                }
             } while(byteCounter < numBytes);
         }
         cc1101_writeSingle(CC1101_PKTCTRL0,CC1101_PKT_FIXED_LEN);
@@ -247,3 +275,4 @@ void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes)
     } while (IDLE != marcState);
     printf("TX burst complete. Send CC1101 to SLEEP.\n");
     cc1101_setSleepState();
+}
