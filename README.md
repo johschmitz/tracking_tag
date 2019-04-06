@@ -21,6 +21,7 @@ lifetime.
   on the HC-11 soldered to TXD and RXD)
 - SDCC >= 3.8
 - stm8flash
+- GNU Radio + gr-osmosdr (for receiving and debugging)
 
 ## Related links and additional information
 

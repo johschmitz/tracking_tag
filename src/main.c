@@ -5,12 +5,12 @@
 #include "time.h"
 #include "uart.h"
 #include "cc1101.h"
-#include "cdma_code.h"
+#include "cdma_sequence.h"
 #include "watchdog.h"
 #include "awu.h"
 
 // Choose rate and modulation
-const enum MODULATION modulation = CC1101_MODULATION_OOK;
+const enum MODULATION modulation = CC1101_MODULATION_FSK;
 const enum DATRATE datarate = CC1101_DATARATE_FAST;
 
 /*
@@ -86,7 +86,7 @@ void main() {
     printf("Beginning transmission.\n");
     while (1) {
         iwdg_refresh();
-        cc1101_sendDataPollGdo0(cdma_code, CDMA_CODE_BYTES, modulation);
+        cc1101_sendDataPollGdo0(cdma_sequence, CDMA_CODE_BYTES, modulation);
         printf("Transmitted code sequence %d time(s)\n", ++counter);
         // Refresh watchdog
         iwdg_refresh();

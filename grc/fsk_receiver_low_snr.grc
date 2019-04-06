@@ -93,7 +93,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(896, 76)</value>
+      <value>(880, 76)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -174,7 +174,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(952, 12)</value>
+      <value>(936, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -209,7 +209,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>fsk_deviation_hz</value>
+      <value>fsk_deviation</value>
     </param>
     <param>
       <key>value</key>
@@ -259,7 +259,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1048, 12)</value>
+      <value>(1032, 12)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -372,7 +372,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(808, 12)</value>
+      <value>(792, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -478,7 +478,7 @@
     </param>
     <param>
       <key>high_cutoff_freq</key>
-      <value>1e6</value>
+      <value>fsk_deviation</value>
     </param>
     <param>
       <key>id</key>
@@ -506,7 +506,7 @@
     </param>
     <param>
       <key>width</key>
-      <value>0.5e6</value>
+      <value>fsk_deviation/2</value>
     </param>
     <param>
       <key>win</key>
@@ -569,7 +569,7 @@
     </param>
     <param>
       <key>low_cutoff_freq</key>
-      <value>-1e6</value>
+      <value>-fsk_deviation</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -585,7 +585,7 @@
     </param>
     <param>
       <key>width</key>
-      <value>0.5e6</value>
+      <value>fsk_deviation/2</value>
     </param>
     <param>
       <key>win</key>
@@ -604,7 +604,7 @@
     </param>
     <param>
       <key>const</key>
-      <value>[-0.5]*fft_size</value>
+      <value>[-1]*fft_size</value>
     </param>
     <param>
       <key>affinity</key>
@@ -612,11 +612,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(496, 564)</value>
+      <value>(488, 564)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -655,7 +655,7 @@
     </param>
     <param>
       <key>const</key>
-      <value>[-0.5]*fft_size</value>
+      <value>[-1]*fft_size</value>
     </param>
     <param>
       <key>affinity</key>
@@ -667,7 +667,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(656, 676)</value>
+      <value>(488, 676)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -710,11 +710,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(856, 572)</value>
+      <value>(1072, 572)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -847,7 +847,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(504, 808)</value>
+      <value>(696, 808)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -886,15 +886,15 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>0</value>
     </param>
     <param>
       <key>file</key>
-      <value>cdma_code_id_0001.byte</value>
+      <value>cdma_code_bits.byte</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1156, 744)</value>
+      <value>(1180, 688)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -923,6 +923,61 @@
     <param>
       <key>vlen</key>
       <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_file_source</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>file</key>
+      <value>cdma_sequence_fft.complex</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(148, 384)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>270</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_file_source_0_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>repeat</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fft_size</value>
     </param>
   </block>
   <block>
@@ -969,11 +1024,7 @@
     </param>
   </block>
   <block>
-    <key>blocks_packed_to_unpacked_xx</key>
-    <param>
-      <key>bits_per_chunk</key>
-      <value>1</value>
-    </param>
+    <key>blocks_multiply_const_vxx</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -983,20 +1034,20 @@
       <value></value>
     </param>
     <param>
+      <key>const</key>
+      <value>[2]*fft_size</value>
+    </param>
+    <param>
       <key>affinity</key>
       <value></value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>endianness</key>
-      <value>gr.GR_MSB_FIRST</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 564)</value>
+      <value>(688, 564)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1004,7 +1055,11 @@
     </param>
     <param>
       <key>id</key>
-      <value>blocks_packed_to_unpacked_xx_0</value>
+      <value>blocks_multiply_const_vxx_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>float</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1015,12 +1070,110 @@
       <value>0</value>
     </param>
     <param>
-      <key>num_ports</key>
-      <value>1</value>
+      <key>vlen</key>
+      <value>fft_size</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_multiply_const_vxx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>const</key>
+      <value>[2]*fft_size</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(688, 676)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_multiply_const_vxx_0_0</value>
     </param>
     <param>
       <key>type</key>
-      <value>byte</value>
+      <value>float</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>fft_size</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_multiply_const_xx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>const</key>
+      <value>1.0/(fft_size*fft_size)</value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(504, 804)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_multiply_const_xx_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
     </param>
   </block>
   <block>
@@ -1043,7 +1196,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(920, 684)</value>
+      <value>(880, 684)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1090,11 +1243,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(672, 572)</value>
+      <value>(880, 572)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1357,7 +1510,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>fft_size</key>
@@ -1503,7 +1656,7 @@
     </param>
     <param>
       <key>if_gain0</key>
-      <value>16</value>
+      <value>10</value>
     </param>
     <param>
       <key>iq_balance_mode0</key>
@@ -3277,7 +3430,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(916, 360)</value>
+      <value>(908, 360)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -3612,7 +3765,7 @@
     <key>qtgui_time_sink_x</key>
     <param>
       <key>autoscale</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>axislabels</key>
@@ -3644,7 +3797,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1172, 360)</value>
+      <value>(1156, 368)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -3979,7 +4132,7 @@
     <key>qtgui_time_sink_x</key>
     <param>
       <key>autoscale</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>axislabels</key>
@@ -4007,11 +4160,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(632, 484)</value>
+      <value>(1004, 360)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -4019,7 +4172,7 @@
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>90</value>
     </param>
     <param>
       <key>grid</key>
@@ -4027,7 +4180,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>qtgui_time_sink_x_2_0</value>
+      <value>qtgui_time_sink_x_2_1</value>
     </param>
     <param>
       <key>legend</key>
@@ -4283,11 +4436,11 @@
     </param>
     <param>
       <key>size</key>
-      <value>num_chips</value>
+      <value>samples_per_burst/bandpass_decim_rate</value>
     </param>
     <param>
       <key>srate</key>
-      <value>chip_rate</value>
+      <value>samp_rate/bandpass_decim_rate</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -4335,11 +4488,11 @@
     </param>
     <param>
       <key>ymax</key>
-      <value>2</value>
+      <value>1.5</value>
     </param>
     <param>
       <key>ymin</key>
-      <value>-1</value>
+      <value>-0.5</value>
     </param>
   </block>
   <block>
@@ -4378,7 +4531,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(676, 864)</value>
+      <value>(852, 864)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -4670,7 +4823,7 @@
     </param>
     <param>
       <key>tr_level</key>
-      <value>1e6</value>
+      <value>0.05</value>
     </param>
     <param>
       <key>tr_mode</key>
@@ -4759,7 +4912,7 @@
   </connection>
   <connection>
     <source_block_id>blocks_char_to_float_0</source_block_id>
-    <sink_block_id>qtgui_time_sink_x_2_0</sink_block_id>
+    <sink_block_id>qtgui_time_sink_x_2_1</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -4783,9 +4936,15 @@
   </connection>
   <connection>
     <source_block_id>blocks_file_source_0</source_block_id>
-    <sink_block_id>blocks_packed_to_unpacked_xx_0</sink_block_id>
+    <sink_block_id>blocks_char_to_float_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_file_source_0_0</source_block_id>
+    <sink_block_id>blocks_multiply_conjugate_cc_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>1</sink_key>
   </connection>
   <connection>
     <source_block_id>blocks_multiply_conjugate_cc_0</source_block_id>
@@ -4794,20 +4953,32 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_packed_to_unpacked_xx_0</source_block_id>
-    <sink_block_id>blocks_char_to_float_0</sink_block_id>
+    <source_block_id>blocks_multiply_const_vxx_0</source_block_id>
+    <sink_block_id>blocks_add_const_vxx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_stream_to_vector_0</source_block_id>
+    <source_block_id>blocks_multiply_const_vxx_0_0</source_block_id>
     <sink_block_id>blocks_add_const_vxx_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_multiply_const_xx_0</source_block_id>
+    <sink_block_id>blocks_complex_to_real_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_stream_to_vector_0</source_block_id>
+    <sink_block_id>blocks_multiply_const_vxx_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>blocks_stream_to_vector_1</source_block_id>
-    <sink_block_id>blocks_add_const_vxx_0</sink_block_id>
+    <sink_block_id>blocks_multiply_const_vxx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -4837,7 +5008,7 @@
   </connection>
   <connection>
     <source_block_id>blocks_vector_to_stream_0</source_block_id>
-    <sink_block_id>blocks_complex_to_real_0</sink_block_id>
+    <sink_block_id>blocks_multiply_const_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
