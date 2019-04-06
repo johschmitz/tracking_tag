@@ -105,7 +105,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>4</value>
+      <value>2</value>
     </param>
   </block>
   <block>
@@ -890,7 +890,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>cdma_code_bits.byte</value>
+      <value>cdma_sequence.byte</value>
     </param>
     <param>
       <key>_coordinate</key>

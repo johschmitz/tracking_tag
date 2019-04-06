@@ -42,6 +42,13 @@ def write_reference_file(reference_file_name, sequence):
     sequence.tofile(output_file)
     output_file.close()
 
+def oversample(sequence, oversampling_factor):
+    length = int(oversampling_factor * len(sequence))
+    indices = np.arange(length) * len(sequence) // length
+    symbols = np.where(sequence, 1, 0)
+    sequence_reseampled = np.array(symbols)[indices]
+    return sequence_reseampled
+
 def main():
     parser = argparse.ArgumentParser()
     required = parser.add_argument_group('required arguments')
@@ -49,6 +56,8 @@ def main():
                         help="The id for generating the code sequence")
     parser.add_argument("-l", "--code-length", type=int, default=1024,
                         help="Length of the code (powers of 2, maximum 8192)")
+    parser.add_argument("-o", "--oversampling-factor", type=int, default=1,
+                        help="Oversampling factor for the reference code sequence.")
     parser.add_argument("-c", "--header-file", type=str, default="cdma_sequence.h",
                         help="Name of the header file for the tag "
                         "(C header file)")
@@ -83,15 +92,21 @@ def main():
     sequence_uint8 = np.frombuffer(sequence, dtype=np.uint8)
     sequence_unpacked = np.unpackbits(sequence_uint8)
 
+    if 1 != args.oversampling_factor:
+        print("Oversample reference sequence with factor:", args.oversampling_factor)
+        sequence_unpacked = oversample(sequence_unpacked, args.oversampling_factor)
+        # Go back to uint8
+        sequence_unpacked = np.array(sequence_unpacked, dtype=np.uint8)
+
     write_reference_file(reference_file_bits_name, sequence_unpacked)
     print("Reference file (bits) written to:", reference_file_bits_name)
 
     # Generate FFT reference for fast correlation (also remove DC)
     sequence_unpacked_no_dc = np.array(sequence_unpacked,dtype=np.float32)*2-1
     sequence_fft = np.array(np.fft.fft(sequence_unpacked_no_dc),dtype=np.complex64)
-    
+
     write_reference_file(reference_file_bits_fft_name, sequence_fft)
-    print("Reference file (fft) written to:", reference_file_bits_fft_name)
+    print("Reference file (FFT) written to:", reference_file_bits_fft_name)
 
 if __name__ == '__main__':
     main()
