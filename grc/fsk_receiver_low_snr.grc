@@ -93,7 +93,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(880, 76)</value>
+      <value>(888, 76)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -120,7 +120,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 12)</value>
+      <value>(472, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -147,7 +147,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(272, 12)</value>
+      <value>(280, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -174,7 +174,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 12)</value>
+      <value>(944, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -201,7 +201,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 12)</value>
+      <value>(696, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -228,7 +228,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(368, 12)</value>
+      <value>(376, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -259,7 +259,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1032, 12)</value>
+      <value>(1040, 12)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -326,7 +326,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>samp_rate</value>
+      <value>sample_rate</value>
     </param>
     <param>
       <key>value</key>
@@ -345,7 +345,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(552, 12)</value>
+      <value>(560, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -357,7 +357,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>int(num_chips*samp_rate/chip_rate)</value>
+      <value>int(num_chips*sample_rate/chip_rate)</value>
     </param>
   </block>
   <block>
@@ -372,7 +372,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(792, 12)</value>
+      <value>(800, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -384,7 +384,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>int(samp_rate/1e6)</value>
+      <value>int(sample_rate/1e6)</value>
     </param>
   </block>
   <block>
@@ -502,7 +502,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>sample_rate</value>
     </param>
     <param>
       <key>width</key>
@@ -581,7 +581,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>sample_rate</value>
     </param>
     <param>
       <key>width</key>
@@ -3020,7 +3020,7 @@
     </param>
     <param>
       <key>sample_rate</key>
-      <value>samp_rate</value>
+      <value>sample_rate</value>
     </param>
     <param>
       <key>sync</key>
@@ -3339,7 +3339,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>sample_rate</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -3706,7 +3706,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate/bandpass_decim_rate</value>
+      <value>sample_rate/bandpass_decim_rate</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -4073,7 +4073,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate/bandpass_decim_rate</value>
+      <value>sample_rate/bandpass_decim_rate</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -4440,7 +4440,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate/bandpass_decim_rate</value>
+      <value>sample_rate/bandpass_decim_rate</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -4807,7 +4807,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>sample_rate/bandpass_decim_rate</value>
     </param>
     <param>
       <key>stemplot</key>
