@@ -305,7 +305,7 @@ uint8_t cc1101_readReg(uint8_t address, uint8_t regType);
 uint8_t cc1101_readSingle(uint8_t address);
 uint8_t cc1101_readStatus(uint8_t address);
 void cc1101_writeSingle(uint8_t address, uint8_t value);
-void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len);
+void cc1101_writeBurstCDMA(uint8_t address, uint8_t *chips, uint8_t databitPacked, uint8_t len);
 void cc1101_writeCmdStrobe(uint8_t command );
 void cc1101_writePaTableOok(uint8_t paValue);
 
@@ -319,4 +319,6 @@ void cc1101_flushTxFifo();
 void cc1101_setIdleState();
 void cc1101_setSleepState(); 
 
-void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes, enum MODULATION modulation);
+void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
+                             uint8_t *data, uint16_t numDataBytes,
+                             enum MODULATION modulation, uint8_t databitCounter);

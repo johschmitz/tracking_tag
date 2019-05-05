@@ -12,6 +12,7 @@
 // Choose rate and modulation
 const enum MODULATION modulation = CC1101_MODULATION_FSK;
 const enum DATRATE datarate = CC1101_DATARATE_FAST;
+const int num_databits = 16;
 
 /*
  * Redirect stdout to UART
@@ -49,8 +50,6 @@ void awu_irq_handler() __interrupt(AWU_ISR) {
 }
 
 void main() {
-    uint32_t counter = 0;
-
     // Enable interrupts
     enable_interrupts();
 
@@ -83,11 +82,16 @@ void main() {
     printf("%d\n",cc1101_readReg(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & 0x1f);
 
     // Permanently toggle between sleep and burst tranmission until power source is dead
+    uint8_t databit_counter = 0;
     printf("Beginning transmission.\n");
     while (1) {
         iwdg_refresh();
-        cc1101_sendDataPollGdo0(cdma_sequence, CDMA_CODE_BYTES, modulation);
-        printf("Transmitted code sequence %d time(s)\n", ++counter);
+        cc1101_sendDataPollGdo0(cdma_sequence, CDMA_CODE_BYTES,
+            data_sequence, DATA_BYTES, modulation, databit_counter);
+        databit_counter++;
+        if (databit_counter >= num_databits) {
+            databit_counter = 0;
+        }
         // Refresh watchdog
         iwdg_refresh();
         // Go to sleep

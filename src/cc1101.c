@@ -175,12 +175,12 @@ void cc1101_writeSingle(uint8_t address, uint8_t value) {
     cc1101_unSelect();
 }
 
-void cc1101_writeBurst(uint8_t address, uint8_t *data, uint8_t len) {
+void cc1101_writeBurstCDMA(uint8_t address, uint8_t *chips, uint8_t databitPacked, uint8_t len) {
     int i;
     cc1101_select();
     SPI_write(address | WRITE_BURST);
     for(i=0;i<len;i++) {
-        SPI_write(data[i]);
+        SPI_write(chips[i]^databitPacked);
     }
     cc1101_unSelect();
 }
@@ -227,9 +227,13 @@ void cc1101_setSleepState()
     cc1101_writeCmdStrobe(CC1101_SPWD);
 }
 
-void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes, enum MODULATION modulation)
+void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
+                             uint8_t *data, uint16_t numDataBytes,
+                             enum MODULATION modulation, uint8_t databitCounter)
 {
     uint16_t byteCounter = 0;
+    uint8_t databitUnpacked;
+    uint8_t databitPacked;
     enum MARCSTATE marcState;
 
     if (CC1101_MODULATION_OOK == modulation) {
@@ -241,21 +245,31 @@ void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes, enum MODULATION m
     cc1101_synthStartupState();
     delay_ms(1);
 
-    printf("Length of data sequence: %u bytes.\n", numBytes);
-    if (numBytes > 0)
+    // Read databit and pack for XOR operation with CDMA chips
+    databitUnpacked = data[(int)(databitCounter/8)] >> (7 - databitCounter % 8) & 0x01 ;
+    printf("Databit: %u\n",databitUnpacked);
+    if (1 == databitUnpacked) {
+        databitPacked = 0x00;
+    }
+    else {
+        databitPacked = 0xFF;
+    }
+
+    printf("Length of CDMA sequence: %u\n", numCDMABytes*8);
+    if (numCDMABytes > 0)
     {
         printf("Beginning TX burst...\n");
         // Set infinite package length mode
         cc1101_writeSingle(CC1101_PKTCTRL0,CC1101_PKT_INF_LEN);
         cc1101_writeSingle(CC1101_PKTLEN,0);
-        cc1101_writeBurst(CC1101_TXFIFO, data, CC1101_TXFIFO_LEN);
+        cc1101_writeBurstCDMA(CC1101_TXFIFO, chips, databitPacked, CC1101_TXFIFO_LEN);
         byteCounter += CC1101_TXFIFO_LEN;
         cc1101_setTxState();
-        if (byteCounter < numBytes) {
+        if (byteCounter < numCDMABytes) {
             // Refill TX FIFO periodically until sequence is complete
             do {
                 wait_GDO0_low();
-                cc1101_writeBurst(CC1101_TXFIFO, &data[byteCounter], CC1101_TXFIFO_REFILL);
+                cc1101_writeBurstCDMA(CC1101_TXFIFO, &chips[byteCounter], databitPacked, CC1101_TXFIFO_REFILL);
                 byteCounter += CC1101_TXFIFO_REFILL;
                 // Check for TX FIFO underflow
                 if (TXFIFO_UNDERFLOW == cc1101_readStatus(CC1101_MARCSTATE) & 0x1F) {
@@ -264,7 +278,7 @@ void cc1101_sendDataPollGdo0(uint8_t *data, uint16_t numBytes, enum MODULATION m
                     cc1101_setIdleState();
                     return;
                 }
-            } while(byteCounter < numBytes);
+            } while(byteCounter < numCDMABytes);
         }
         cc1101_writeSingle(CC1101_PKTCTRL0,CC1101_PKT_FIXED_LEN);
     }

@@ -1,4 +1,10 @@
+#define DATA_BYTES 2
 #define CDMA_CODE_BYTES 1024
+
+// Data sequence for synchronization
+const uint8_t data_sequence[DATA_BYTES] = {
+    0b10101010, 0b11110000
+};
 
 // Code sequence ID: 0001
 const uint8_t cdma_sequence[CDMA_CODE_BYTES] = {

@@ -21,7 +21,14 @@ def sha512_sequence(sequence_id, code_length):
 
 def write_header_file(header_file_name, sequence, sequence_id):
     output_file = open(header_file_name, "w")
-    prefix = ("#define CDMA_CODE_BYTES " + str(len(sequence)) + "\n\n"
+    prefix = ("#define DATA_BYTES 2\n"
+              "#define CDMA_CODE_BYTES " + str(len(sequence)) + "\n"
+              "\n"
+              "// Data sequence for synchronization\n"
+              "const uint8_t data_sequence[DATA_BYTES] = {\n"
+              "    0b10101010, 0b11110000\n"
+              "};\n"
+              "\n"
               "// Code sequence ID: " + sequence_id + "\n"
               "const uint8_t cdma_sequence[CDMA_CODE_BYTES] = {\n    ")
     postfix = "\n};"
