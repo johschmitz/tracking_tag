@@ -4,7 +4,7 @@ import argparse
 import hashlib
 import struct
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 def sha512_sequence(sequence_id, code_length):
     # Stage 1
@@ -68,6 +68,10 @@ def main():
                         help="Name of the fft reference file for a fast "
                         "correlation in the receiver (fft of bits (cdma chips) "
                         "in bytes)")
+    parser.add_argument("--fft-input-padding", action='store_true', default=False,
+                        help="Zero pad fft input for non circular cross correlation.")
+    parser.add_argument("--debug-plot", action='store_true', default=False,
+                        help="Show a plot of the correlation for debugging.")
 
     args = parser.parse_args()
     sequence_id = args.sequence_id
@@ -103,10 +107,33 @@ def main():
 
     # Generate FFT reference for fast correlation (also remove DC)
     sequence_unpacked_no_dc = np.array(sequence_unpacked,dtype=np.float32)*2-1
-    sequence_fft = np.array(np.fft.fft(sequence_unpacked_no_dc),dtype=np.complex64)
+    if args.fft_input_padding:
+        print("Padding fft input with zeros for non-circular fast cross correlation.")
+        # Pad fft input with zeros, we have a window of two times sequence length and a shift of +-sequence length (->3)
+        fft_in_ref = np.concatenate((sequence_unpacked_no_dc, \
+                                    np.zeros(args.code_length*args.oversampling_factor*2)))
+    else:
+        fft_in_ref = sequence_unpacked_no_dc
+    sequence_fft = np.array(np.fft.fft(fft_in_ref),dtype=np.complex64)
 
     write_reference_file(reference_file_bits_fft_name, sequence_fft)
     print("Reference file (FFT) written to:", reference_file_bits_fft_name)
+    print("Complex samples in FFT reference file:",len(sequence_fft))
+
+    if args.debug_plot:
+        # Plot for debugging
+        test_input_fft = np.fft.fft(np.concatenate((np.zeros(args.code_length*args.oversampling_factor),
+                                                    np.random.randint(2,size=args.code_length*args.oversampling_factor//2)*2-1,
+                                                    sequence_unpacked_no_dc,
+                                                    np.random.randint(2,size=args.code_length*args.oversampling_factor//2)*2-1)))
+        if args.fft_input_padding:
+            corr = np.fft.ifft(test_input_fft*np.conjugate(sequence_fft)) \
+                   /args.code_length/args.oversampling_factor
+        else:
+            corr = np.fft.ifftshift(np.fft.ifft(sequence_fft*np.conjugate(sequence_fft))) \
+                   /args.code_length/args.oversampling_factor
+        plt.plot(corr.real)
+        plt.show()
 
 if __name__ == '__main__':
     main()
