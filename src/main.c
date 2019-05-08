@@ -12,7 +12,6 @@
 // Choose rate and modulation
 const enum MODULATION modulation = CC1101_MODULATION_FSK;
 const enum DATRATE datarate = CC1101_DATARATE_FAST;
-const int num_databits = 16;
 
 /*
  * Redirect stdout to UART
@@ -87,9 +86,9 @@ void main() {
     while (1) {
         iwdg_refresh();
         cc1101_sendDataPollGdo0(cdma_sequence, CDMA_CODE_BYTES,
-            data_sequence, DATA_BYTES, modulation, databit_counter);
+            data_sequence, databit_counter, modulation);
         databit_counter++;
-        if (databit_counter >= num_databits) {
+        if (databit_counter >= DATA_BYTES*8) {
             databit_counter = 0;
         }
         // Refresh watchdog

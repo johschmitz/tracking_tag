@@ -320,5 +320,5 @@ void cc1101_setIdleState();
 void cc1101_setSleepState(); 
 
 void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
-                             uint8_t *data, uint16_t numDataBytes,
-                             enum MODULATION modulation, uint8_t databitCounter);
+                             uint8_t *data, uint8_t databitCounter,
+                             enum MODULATION modulation);
