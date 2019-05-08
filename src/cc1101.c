@@ -6,6 +6,7 @@
 #include "gpio.h"
 #include "cc1101.h"
 #include "spi.h"
+#include "debug.h"
 
 
 void cc1101_init(enum DATARATE datarate, enum MODULATION modulation) {
@@ -43,7 +44,7 @@ void cc1101_reset() {
     cc1101_select();
     cc1101_writeCmdStrobe(CC1101_SRES);
     cc1101_unSelect();
-    printf("CC1101 reset complete.\n");
+    debug_print("CC1101 reset complete.\n");
 }
 
 void cc1101_setCCregs(enum DATARATE datarate, enum MODULATION modulation) {
@@ -64,12 +65,12 @@ void cc1101_setCCregs(enum DATARATE datarate, enum MODULATION modulation) {
     cc1101_writeSingle(CC1101_FREQ1,  CC1101_DEFVAL_FREQ1_433);
     cc1101_writeSingle(CC1101_FREQ0,  CC1101_DEFVAL_FREQ0_433);
     if (CC1101_DATARATE_SLOW == datarate) {
-        printf("CC1101 setting data rate to slow.\n");
+        debug_print("CC1101 setting data rate to slow.\n");
         cc1101_writeSingle(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4_SLOW);
         cc1101_writeSingle(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3_SLOW);
     }
     else {
-        printf("CC1101 setting data rate to fast.\n");
+        debug_print("CC1101 setting data rate to fast.\n");
         cc1101_writeSingle(CC1101_MDMCFG4,  CC1101_DEFVAL_MDMCFG4_FAST);
         cc1101_writeSingle(CC1101_MDMCFG3,  CC1101_DEFVAL_MDMCFG3_FAST);
     }
@@ -124,7 +125,7 @@ void cc1101_setCCregs(enum DATARATE datarate, enum MODULATION modulation) {
         cc1101_writePaTableOok(CC1101_PA_10_DBM);
     }
     
-    printf("CC1101 configuration complete.\n");
+    debug_print("CC1101 configuration complete.\n");
 }
 
 void cc1101_waitReady() {
@@ -241,13 +242,13 @@ void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
         cc1101_writePaTableOok(CC1101_PA_10_DBM);
     }
 
-    printf("Startup frequency synthesizer.\n");
+    debug_print("Startup frequency synthesizer.\n");
     cc1101_synthStartupState();
     delay_ms(1);
 
     // Read databit and pack for XOR operation with CDMA chips
     databitUnpacked = data[(int)(databitCounter/8)] >> (7 - databitCounter % 8) & 0x01 ;
-    printf("Databit: %u\n",databitUnpacked);
+    debug_print("Databit: %u\n",databitUnpacked);
     if (1 == databitUnpacked) {
         databitPacked = 0x00;
     }
@@ -255,10 +256,10 @@ void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
         databitPacked = 0xFF;
     }
 
-    printf("Length of CDMA sequence: %u\n", numCDMABytes*8);
+    debug_print("Length of CDMA sequence: %u\n", numCDMABytes*8);
     if (numCDMABytes > 0)
     {
-        printf("Beginning TX burst...\n");
+        debug_print("Beginning TX burst...\n");
         // Set infinite package length mode
         cc1101_writeSingle(CC1101_PKTCTRL0,CC1101_PKT_INF_LEN);
         cc1101_writeSingle(CC1101_PKTLEN,0);
@@ -273,7 +274,7 @@ void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
                 byteCounter += CC1101_TXFIFO_REFILL;
                 // Check for TX FIFO underflow
                 if (TXFIFO_UNDERFLOW == cc1101_readStatus(CC1101_MARCSTATE) & 0x1F) {
-                    printf("TXFIFO underflow. Go back to IDLE state.\n");
+                    debug_print("TXFIFO underflow. Go back to IDLE state.\n");
                     cc1101_flushTxFifo();
                     cc1101_setIdleState();
                     return;
@@ -285,8 +286,8 @@ void cc1101_sendDataPollGdo0(uint8_t *chips, uint16_t numCDMABytes,
     do {
         // Wait for IDLE state
         marcState = cc1101_readStatus(CC1101_MARCSTATE) & 0x1F;
-        printf("MARCSTATE after TX FIFO write loop: %u\n", marcState);
+        debug_print("MARCSTATE after TX FIFO write loop: %u\n", marcState);
     } while (IDLE != marcState);
-    printf("TX burst complete. Send CC1101 to SLEEP.\n");
+    debug_print("TX burst complete. Send CC1101 to SLEEP.\n");
     cc1101_setSleepState();
 }

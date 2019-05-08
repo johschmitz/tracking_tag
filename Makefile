@@ -28,6 +28,7 @@ CFLAGS  += -I$(INCLUDEDIR)
 CFLAGS  += --std-sdcc11
 CFLAGS  += --stack-auto --noinduction --use-non-free
 CFLAGS  += --opt-code-size
+#CFLAGS  += -DDEBUG
 ## Extra optimization rules - use with care
 #CFLAGS  += --peep-file $(LIBDIR)/util/extra.def
 LDFLAGS  = -m$(ARCH) -l$(ARCH) --out-fmt-ihx

@@ -8,6 +8,8 @@
 #include "cdma_sequence.h"
 #include "watchdog.h"
 #include "awu.h"
+#include "debug.h"
+
 
 // Choose rate and modulation
 const enum MODULATION modulation = CC1101_MODULATION_FSK;
@@ -61,28 +63,30 @@ void main() {
 
     // Set stm8 internal clock divider to run with 16 MHz
     CLK_CKDIVR = 0;
-    delay_ms(1);
+    delay_ms(10);
 
+#ifdef DEBUG
     // Initialize UART for debugging
     uart_init();
     delay_ms(10);
+#endif
 
     // Reset and Initialize CC1101
-    printf("\nInitializing CC1101...\n");
+    debug_print("\nInitializing CC1101...\n");
     cc1101_init(datarate, modulation);
     //cc1101_setSyncWord(syncWord[0],syncWord[1]);
-    printf("CC1101 initialization complete.\n");
+    debug_print("CC1101 initialization complete.\n");
     // Print sum device information
-    printf("CC1101_PARTNUM: ");
-    printf("%d\n",cc1101_readReg(CC1101_PARTNUM, CC1101_STATUS_REGISTER));
-    printf("CC1101_VERSION: ");
-    printf("%d\n",cc1101_readReg(CC1101_VERSION, CC1101_STATUS_REGISTER));
-    printf("CC1101_MARCSTATE: ");
-    printf("%d\n",cc1101_readReg(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & 0x1f);
+    debug_print("CC1101_PARTNUM: ");
+    debug_print("%d\n",cc1101_readReg(CC1101_PARTNUM, CC1101_STATUS_REGISTER));
+    debug_print("CC1101_VERSION: ");
+    debug_print("%d\n",cc1101_readReg(CC1101_VERSION, CC1101_STATUS_REGISTER));
+    debug_print("CC1101_MARCSTATE: ");
+    debug_print("%d\n",cc1101_readReg(CC1101_MARCSTATE, CC1101_STATUS_REGISTER) & 0x1f);
 
     // Permanently toggle between sleep and burst tranmission until power source is dead
     uint8_t databit_counter = 0;
-    printf("Beginning transmission.\n");
+    debug_print("Beginning transmission.\n");
     while (1) {
         iwdg_refresh();
         cc1101_sendDataPollGdo0(cdma_sequence, CDMA_CODE_BYTES,
@@ -94,7 +98,7 @@ void main() {
         // Refresh watchdog
         iwdg_refresh();
         // Go to sleep
-        printf("Send MCU to active-halt.\n\n");
+        debug_print("Send MCU to active-halt.\n\n");
         active_halt();
     }
 }
