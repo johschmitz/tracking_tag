@@ -10,6 +10,7 @@ determine its location using trilateration or triangulation. Usage of the
 sleeping modes on both chips in between transmissions enables a long battery
 lifetime.
 
+
 ## Requirements
 
 - HC-11 with pins soldered to RST, SWIM, (both on test pads) GND and 3.3V
@@ -22,6 +23,24 @@ lifetime.
 - SDCC >= 3.8
 - stm8flash
 - GNU Radio + gr-osmosdr (for receiving and debugging)
+
+
+## How to build
+
+To compile the firmware just run
+
+    make
+
+then use
+
+    make flash
+
+to flash the firmware into the microcontroller memory.
+
+*Note:* it might be necessary to unlock the microcontroller before flashing with
+
+    stm8flash -c stlinkv2 -p stm8s003f3 -u
+
 
 ## Related links and additional information
 
