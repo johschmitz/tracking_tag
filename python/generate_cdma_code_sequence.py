@@ -108,7 +108,7 @@ def main():
         reference_file_bits_fft_name = "cdma_sequence_fft_id_" + sequence_id + ".complex"
 
     sequence = sha512_sequence(sequence_id, code_length)
-    print("Length of generated code sequence in bytes:", len(sequence))
+    print("Length of generated code sequence:", 8*len(sequence))
 
     write_header_file(header_file_name, sequence, sequence_id)
     print("Header file written to:", header_file_name)
