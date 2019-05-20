@@ -49,36 +49,50 @@ def write_reference_file(reference_file_name, sequence):
     sequence.tofile(output_file)
     output_file.close()
 
-def oversample(sequence, oversampling_factor):
-    length = int(oversampling_factor * len(sequence))
-    indices = np.arange(length) * len(sequence) // length
-    symbols = np.where(sequence, 1, 0)
-    sequence_reseampled = np.array(symbols)[indices]
-    return sequence_reseampled
+def resample(sequence, chip_rate, rx_sample_rate):
+    # Calculate length of output sequence
+    len_out = int(len(sequence)*rx_sample_rate/chip_rate)
+    # Make it a power 2 length
+    exponent = np.log2(len_out)
+    len_out = 2**int(exponent)
+    t_c = 1/chip_rate
+    t_s = 1/rx_sample_rate
+    t = 0
+    sequence_resampled = np.zeros(len_out)
+    for out_idx in range(len_out):
+        in_idx = np.int(t/t_c)
+        sequence_resampled[out_idx] = sequence[in_idx]
+        t = t + t_s
+    return sequence_resampled
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
     required = parser.add_argument_group('required arguments')
+    optional = parser.add_argument_group('optional arguments')
     required.add_argument("-i", "--sequence-id", type=str, required=True,
-                        help="The id for generating the code sequence")
-    parser.add_argument("-l", "--code-length", type=int, default=1024,
-                        help="Length of the code (powers of 2, maximum 8192)")
-    parser.add_argument("-o", "--oversampling-factor", type=int, default=1,
-                        help="Oversampling factor for the reference code sequence.")
-    parser.add_argument("-c", "--header-file", type=str, default="cdma_sequence.h",
-                        help="Name of the header file for the tag "
-                        "(C header file)")
-    parser.add_argument("-r", "--reference-file-bits", type=str,
-                        help="Name of the reference file for the receiver "
-                        "(bits (cdma chips) stored in bytes)")
-    parser.add_argument("-f", "--reference-file-bits-fft", type=str,
-                        help="Name of the fft reference file for a fast "
-                        "correlation in the receiver (fft of bits (cdma chips) "
-                        "in bytes)")
-    parser.add_argument("--fft-input-padding", action='store_true', default=False,
-                        help="Zero pad fft input for non circular cross correlation.")
-    parser.add_argument("--debug-plot", action='store_true', default=False,
-                        help="Show a plot of the correlation for debugging.")
+                          help="The id for generating the code sequence.")
+    optional.add_argument("-h", "--help", action="help", help="Show this help message"
+                          " and exit.")
+    optional.add_argument("-l", "--code-length", type=int, default=1024,
+                          help="Length of the code (powers of 2, default 1024, maximum 8192)")
+    optional.add_argument("-r", "--chip-rate", type=float, default=1.0,
+                          help="Chip rate of the transmitter, default: 1.0")
+    optional.add_argument("-o", "--rx-sample-rate", type=float, default=1.0,
+                          help="Receiver sample rate for the reference code sequence, default: 1.0")
+    optional.add_argument("-c", "--header-file", type=str, default="cdma_sequence.h",
+                          help="Name of the header file for the tag "
+                          "(C header file), default: cdma_sequence.h")
+    optional.add_argument("-t", "--reference-file-bits", type=str,
+                          help="Name of the reference file for the receiver "
+                          "(bits (cdma chips) stored in bytes), default: cdma_sequence_id_<ID>.byte")
+    optional.add_argument("-f", "--reference-file-bits-fft", type=str,
+                          help="Name of the fft reference file for a fast "
+                          "correlation in the receiver (fft of bits (cdma chips) "
+                          "in bytes), default: cdma_sequence_fft_id_<ID>.complex")
+    optional.add_argument("--fft-input-padding", action='store_true', default=False,
+                          help="Zero pad fft input for non circular cross correlation.")
+    optional.add_argument("--debug-plot", action='store_true', default=False,
+                          help="Show a plot of the correlation for debugging.")
 
     args = parser.parse_args()
     sequence_id = args.sequence_id
@@ -103,9 +117,9 @@ def main():
     sequence_uint8 = np.frombuffer(sequence, dtype=np.uint8)
     sequence_unpacked = np.unpackbits(sequence_uint8)
 
-    if 1 != args.oversampling_factor:
-        print("Oversample reference sequence with factor:", args.oversampling_factor)
-        sequence_unpacked = oversample(sequence_unpacked, args.oversampling_factor)
+    if 1 != args.rx_sample_rate or 1 != args.chip_rate:
+        print("Resample reference sequence with factor:", args.rx_sample_rate/args.chip_rate)
+        sequence_unpacked = resample(sequence_unpacked, args.chip_rate, args.rx_sample_rate)
         # Go back to uint8
         sequence_unpacked = np.array(sequence_unpacked, dtype=np.uint8)
 
@@ -118,7 +132,7 @@ def main():
         print("Padding fft input with zeros for non-circular fast cross correlation.")
         # Pad fft input with zeros, we have a window of two times sequence length and a shift of +-sequence length (->3)
         fft_in_ref = np.concatenate((sequence_unpacked_no_dc, \
-                                    np.zeros(args.code_length*args.oversampling_factor*2)))
+            np.zeros(args.code_length*int(args.rx_sample_rate/args.chip_rate)*2)))
     else:
         fft_in_ref = sequence_unpacked_no_dc
     sequence_fft = np.array(np.fft.fft(fft_in_ref),dtype=np.complex64)
@@ -129,16 +143,17 @@ def main():
 
     if args.debug_plot:
         # Plot for debugging
-        test_input_fft = np.fft.fft(np.concatenate((np.zeros(args.code_length*args.oversampling_factor),
-                                                    np.random.randint(2,size=args.code_length*args.oversampling_factor//2)*2-1,
-                                                    sequence_unpacked_no_dc,
-                                                    np.random.randint(2,size=args.code_length*args.oversampling_factor//2)*2-1)))
+        test_input_fft = np.fft.fft(np.concatenate((
+            np.zeros(args.code_length*int(args.rx_sample_rate/args.chip_rate)),
+            np.random.randint(2,size=args.code_length*int(args.rx_sample_rate/args.chip_rate)//2)*2-1,
+            sequence_unpacked_no_dc,
+            np.random.randint(2,size=args.code_length*int(args.rx_sample_rate/args.chip_rate)//2)*2-1)))
         if args.fft_input_padding:
             corr = np.fft.ifft(test_input_fft*np.conjugate(sequence_fft)) \
-                   /args.code_length/args.oversampling_factor
+                   /args.code_length/int(args.rx_sample_rate/args.chip_rate)
         else:
             corr = np.fft.ifftshift(np.fft.ifft(sequence_fft*np.conjugate(sequence_fft))) \
-                   /args.code_length/args.oversampling_factor
+                   /args.code_length/int(args.rx_sample_rate/args.chip_rate)
         plt.plot(corr.real)
         plt.show()
 
