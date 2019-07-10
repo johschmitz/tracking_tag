@@ -2,17 +2,17 @@
 
 # Usage help
 display_usage() {
-    echo -e "Usage: build_firmware.sh <ID>"
+    echo -e "Usage: ./build.sh ID"
 }
 if [[ $1 == "--help" ||  $1 == "-h" ]]
-then
-display_usage
-exit 0
+    then
+        display_usage
+    exit 0
 fi
 if [[ $# -le 0 || $# -ge 2 ]]
-then
-display_usage
-exit 1
+    then
+        display_usage
+    exit 1
 fi
 
 ID=$1
