@@ -197,7 +197,7 @@ enum MODULATION
 #define CC1101_DEFVAL_PKTCTRL1          0x00    //  Packet Automation Control
 #define CC1101_DEFVAL_PKTCTRL0          0x02    //  Packet Automation Control
 #define CC1101_DEFVAL_ADDR              0x00    //  Device Address
-#define CC1101_DEFVAL_CHANNR            0x0A    //  Channel Number
+#define CC1101_DEFVAL_CHANNR            0x00    //  Channel Number
 #define CC1101_DEFVAL_FSCTRL1           0x06    //  Frequency Synthesizer Control
 #define CC1101_DEFVAL_FSCTRL0           0x00    //  Frequency Synthesizer Control
 // Carrier frequency = 868 MHz
@@ -212,10 +212,10 @@ enum MODULATION
 #define CC1101_DEFVAL_FREQ2_918         0x23    // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_918         0x4E    // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_918         0xC4    // Frequency Control Word, Low Byte
-// Carrier frequency = 433 MHz
+// Carrier frequency = 433.85 MHz
 #define CC1101_DEFVAL_FREQ2_433         0x10    // Frequency Control Word, High Byte
-#define CC1101_DEFVAL_FREQ1_433         0xA7    // Frequency Control Word, Middle Byte
-#define CC1101_DEFVAL_FREQ0_433         0x62    // Frequency Control Word, Low Byte
+#define CC1101_DEFVAL_FREQ1_433         0xAF    // Frequency Control Word, Middle Byte
+#define CC1101_DEFVAL_FREQ0_433         0xC1    // Frequency Control Word, Low Byte
 // Data rate 1.001122 kBaud
 #define CC1101_DEFVAL_MDMCFG4_SLOW      0xF5    // Modem Configuration
 #define CC1101_DEFVAL_MDMCFG3_SLOW      0x43    // Modem Configuration
@@ -227,7 +227,7 @@ enum MODULATION
 // Modulation: OOK
 #define CC1101_DEFVAL_MDMCFG2_OOK       0xB0    //  Modem Configuration
 #define CC1101_DEFVAL_MDMCFG1           0x00    //  Modem Configuration
-#define CC1101_DEFVAL_MDMCFG0           0xF8    //  Modem Configuration
+#define CC1101_DEFVAL_MDMCFG0           0x00    //  Modem Configuration
 #define CC1101_DEFVAL_DEVIATN           0x77    //  Modem Deviation Setting
 #define CC1101_DEFVAL_MCSM2             0x07    //  Main Radio Control State Machine Configuration
 #define CC1101_DEFVAL_MCSM1             0x00    //  Main Radio Control State Machine Configuration
