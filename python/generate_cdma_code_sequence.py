@@ -123,6 +123,7 @@ def main():
         # Go back to uint8
         sequence_unpacked = np.array(sequence_unpacked, dtype=np.uint8)
 
+    print("Sequence imbalance:",sum(sequence_unpacked)-code_length/2)
     write_reference_file(reference_file_bits_name, sequence_unpacked)
     print("Reference file (bits) written to:", reference_file_bits_name)
 
