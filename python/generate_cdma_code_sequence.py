@@ -19,6 +19,42 @@ def sha512_sequence(sequence_id, code_length):
 
     return sequence
 
+def balance_sequence(sequence):
+    sequence_unpacked = np.unpackbits(np.frombuffer(sequence, dtype=np.uint8))
+    # Calculate imbalance between 0s and 1s
+    imbalance = sum(sequence_unpacked)-len(sequence_unpacked)/2
+    print("Sequence imbalance:",imbalance)
+    if imbalance != 0:
+        flip_distance = np.floor(len(sequence_unpacked)/2/abs(imbalance))
+        print("To balance will flip bits of same type at distance:",flip_distance)
+        sequence_balanced = np.ndarray(shape=sequence_unpacked.shape, dtype=np.uint8)
+        zero_counter = 0
+        one_counter = 0
+        flip_counter = 0
+        for idx, bit in enumerate(sequence_unpacked):
+            # Begin with original sequence
+            sequence_balanced[idx] = bit
+            # Flip some bits
+            if flip_counter < abs(imbalance):
+                if imbalance < 0:
+                    if 0 == bit:
+                        zero_counter += 1
+                        if 0 == (zero_counter % flip_distance):
+                            sequence_balanced[idx] = 1
+                            flip_counter += 1
+                else:
+                    if 1 == bit:
+                        one_counter += 1
+                        if 1 == (one_counter % flip_distance):
+                            sequence_balanced[idx] = 0
+                            flip_counter += 1
+        imbalance = sum(sequence_balanced)-len(sequence_balanced)/2
+        print("New sequence imbalance:",imbalance)
+        sequence_repacked = np.packbits(sequence_balanced.astype(int))
+        return sequence_repacked
+    else:
+        return sequence
+
 def write_header_file(header_file_name, sequence, sequence_id):
     output_file = open(header_file_name, "w")
     prefix = ("#define DATA_BYTES 1\n"
@@ -110,12 +146,14 @@ def main():
     sequence = sha512_sequence(sequence_id, code_length)
     print("Length of generated code sequence:", 8*len(sequence))
 
-    write_header_file(header_file_name, sequence, sequence_id)
+    # Make sure we have same number of 0s and 1s
+    sequence_balanced = balance_sequence(sequence)
+
+    write_header_file(header_file_name, sequence_balanced, sequence_id)
     print("Header file written to:", header_file_name)
 
     # Unpack bytes with 8 bits to single bits per byte
-    sequence_uint8 = np.frombuffer(sequence, dtype=np.uint8)
-    sequence_unpacked = np.unpackbits(sequence_uint8)
+    sequence_unpacked = np.unpackbits(np.frombuffer(sequence_balanced, dtype=np.uint8))
 
     if 1 != args.rx_sample_rate or 1 != args.chip_rate:
         print("Resample reference sequence with factor:", args.rx_sample_rate/args.chip_rate)
@@ -123,7 +161,6 @@ def main():
         # Go back to uint8
         sequence_unpacked = np.array(sequence_unpacked, dtype=np.uint8)
 
-    print("Sequence imbalance:",sum(sequence_unpacked)-code_length/2)
     write_reference_file(reference_file_bits_name, sequence_unpacked)
     print("Reference file (bits) written to:", reference_file_bits_name)
 
