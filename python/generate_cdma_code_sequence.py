@@ -86,16 +86,21 @@ def write_reference_file(reference_file_name, sequence):
     output_file.close()
 
 def resample(sequence, chip_rate, rx_sample_rate):
-    # Calculate length of output sequence
-    len_out = int(len(sequence)*rx_sample_rate/chip_rate)
-    # Make it a power 2 length
-    exponent = np.log2(len_out)
-    len_out = 2**int(exponent)
+    # Calculate length of resampled sequence
+    len_resampled = int(len(sequence)*rx_sample_rate/chip_rate)
+    # In the following make it a sum of powers of 2 length
+    max_exponent = int(np.log2(len_resampled))
+    # FIXME make the smallest power 2 exponent configurable
+    min_exponent = 4
+    len_power_two = 2**int(max_exponent)
+    for exponent in range(max_exponent,min_exponent-1,-1):
+        if len_power_two + 2**exponent <= len_resampled:
+            len_power_two = len_power_two + 2**exponent
     t_c = 1/chip_rate
     t_s = 1/rx_sample_rate
     t = 0
-    sequence_resampled = np.zeros(len_out)
-    for out_idx in range(len_out):
+    sequence_resampled = np.zeros(len_power_two)
+    for out_idx in range(min(len_power_two,len_resampled)):
         in_idx = np.int(t/t_c)
         sequence_resampled[out_idx] = sequence[in_idx]
         t = t + t_s
@@ -170,7 +175,7 @@ def main():
         print("Padding fft input with zeros for non-circular fast cross correlation.")
         # Pad fft input with zeros, we have a window of two times sequence length and a shift of +-sequence length (->3)
         fft_in_ref = np.concatenate((sequence_unpacked_no_dc, \
-            np.zeros(args.code_length*int(args.rx_sample_rate/args.chip_rate)*2)))
+            np.zeros(len(sequence_unpacked)*2)))
     else:
         fft_in_ref = sequence_unpacked_no_dc
     sequence_fft = np.array(np.fft.fft(fft_in_ref),dtype=np.complex64)
@@ -182,16 +187,16 @@ def main():
     if args.debug_plot:
         # Plot for debugging
         test_input_fft = np.fft.fft(np.concatenate((
-            np.zeros(args.code_length*int(args.rx_sample_rate/args.chip_rate)),
-            np.random.randint(2,size=args.code_length*int(args.rx_sample_rate/args.chip_rate)//2)*2-1,
+            np.zeros(len(sequence_unpacked_no_dc)),
+            np.random.randint(2,size=len(sequence_unpacked_no_dc)//2)*2-1,
             sequence_unpacked_no_dc,
-            np.random.randint(2,size=args.code_length*int(args.rx_sample_rate/args.chip_rate)//2)*2-1)))
+            np.random.randint(2,size=len(sequence_unpacked_no_dc)//2)*2-1)))
         if args.fft_input_padding:
             corr = np.fft.ifft(test_input_fft*np.conjugate(sequence_fft)) \
-                   /args.code_length/int(args.rx_sample_rate/args.chip_rate)
+                   /len(sequence_unpacked_no_dc)
         else:
             corr = np.fft.ifftshift(np.fft.ifft(sequence_fft*np.conjugate(sequence_fft))) \
-                   /args.code_length/int(args.rx_sample_rate/args.chip_rate)
+                   /len(sequence_unpacked_no_dc)
         plt.plot(corr.real)
         plt.show()
 

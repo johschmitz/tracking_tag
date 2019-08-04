@@ -20,7 +20,7 @@ ID=$1
 make clean
 mkdir -p build
 cd build
-../python/generate_cdma_code_sequence.py -i $ID -l 8192 -r 0.999756e6 -o 2e6 --fft-input-padding
+../python/generate_cdma_code_sequence.py -i $ID -l 8192 -r 0.999756e6 -o 2.4e6 --fft-input-padding
 cp cdma_sequence.h ../include/
 cd ..
 make
