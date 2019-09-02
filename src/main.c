@@ -74,7 +74,6 @@ void main() {
     // Reset and Initialize CC1101
     debug_print("\nInitializing CC1101...\n");
     cc1101_init(datarate, modulation);
-    //cc1101_setSyncWord(syncWord[0],syncWord[1]);
     debug_print("CC1101 initialization complete.\n");
     // Print sum device information
     debug_print("CC1101_PARTNUM: ");
